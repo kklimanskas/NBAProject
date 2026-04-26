@@ -1,13 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { NbaService } from './nba.service';
-
+import { QueryDto } from 'src/dto/query.dto';
 @Controller('nba')
 export class NbaController {
   constructor(private readonly nbaService: NbaService) {}
 
   @Get('players')
-  getPlayers() {
-    return this.nbaService.getPlayers();
+  getPlayers(@Query() query: QueryDto) {
+    return this.nbaService.getPlayers(query);
   }
-
 }
