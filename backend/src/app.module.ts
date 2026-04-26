@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { NbaModule } from './nba/nba.module';
-import { LoggerService } from './logger/logger.service';
 import { LoggerModule } from './logger/logger.module';
 
 @Module({
@@ -17,7 +16,7 @@ import { LoggerModule } from './logger/logger.module';
       }),
     }),
     NbaModule,
-
+    LoggerModule
   ],
   controllers: [AppController],
   providers: [AppService],
