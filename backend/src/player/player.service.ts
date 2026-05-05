@@ -31,6 +31,25 @@ export class PlayerService {
           },
         }),
       );
+      return data;
+    } catch (error) {
+      this.logger.error('Failed to fetch players', (error as Error).stack);
+      throw error;
+    }
+  }
+  async populateDatabaseWithPlayers(query: QueryDto) {
+    try {
+      this.logger.log('Fetching players');
+      const { data } = await firstValueFrom(
+        this.httpService.get(`${this.baseUrl}/players`, {
+          headers: { Authorization: this.apiKey },
+          params: {
+            page: query.page,
+            per_page: query.perPage,
+            search: query.search,
+          },
+        }),
+      );
       await Promise.all(
         data.data.map((player: PlayerResponse) =>
           this.playerModel.findOneAndUpdate(
