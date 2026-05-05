@@ -15,7 +15,41 @@ export class Player {
   position: string = '';
 
   @Prop()
-  teamName: string = '';
+  jerseyNumber: string = '';
+
+  @Prop()
+  college: string = '';
+
+  @Prop()
+  country: string = '';
+
+  @Prop()
+  draftYear: number = 0;
+
+  @Prop()
+  draftRound: number = 0;
+
+  @Prop()
+  draftNumber: number = 0;
+
+  @Prop({ type: Object })
+  team: {
+    id: number;
+    name: string;
+    fullName: string;
+    abbreviation: string;
+    city: string;
+    conference: string;
+    division: string;
+  } = {
+    id: 0,
+    name: '',
+    fullName: '',
+    abbreviation: '',
+    city: '',
+    conference: '',
+    division: '',
+  };
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);
