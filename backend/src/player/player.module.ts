@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
-import { NbaController } from './nba.controller';
-import { NbaService } from './nba.service';
+import { PlayerController } from './player.controller';
+import { PlayerService } from './player.service';
 import { Player, PlayerSchema } from './schemas/player.schema';
 
 @Module({
@@ -10,7 +10,7 @@ import { Player, PlayerSchema } from './schemas/player.schema';
     HttpModule,
     MongooseModule.forFeature([{ name: Player.name, schema: PlayerSchema }]),
   ],
-  controllers: [NbaController],
-  providers: [NbaService],
+  controllers: [PlayerController],
+  providers: [PlayerService],
 })
 export class NbaModule {}

@@ -7,8 +7,8 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
-export class NbaService {
-    private readonly logger = new Logger(NbaService.name);
+export class PlayerService {
+    private readonly logger = new Logger(PlayerService.name);
   private readonly baseUrl = 'https://api.balldontlie.io/v1';
   private readonly apiKey = process.env.API_KEY;
 
