@@ -1,22 +1,22 @@
-import { Injectable, Logger  } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { QueryDto } from 'src/dto/query.dto';
 import { Player } from './schemas/player.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { PlayerResponse } from '../interfaces/player-api.interface';
 
 @Injectable()
 export class PlayerService {
-    private readonly logger = new Logger(PlayerService.name);
+  private readonly logger = new Logger(PlayerService.name);
   private readonly baseUrl = 'https://api.balldontlie.io/v1';
   private readonly apiKey = process.env.API_KEY;
 
   constructor(
     private readonly httpService: HttpService,
     @InjectModel(Player.name) private playerModel: Model<Player>,
-  ) {
-  }
+  ) {}
 
   async getPlayers(query: QueryDto) {
     try {
@@ -31,29 +31,41 @@ export class PlayerService {
           },
         }),
       );
-        await Promise.all(
-        data.data.map((player: any) =>
+      await Promise.all(
+        data.data.map((player: PlayerResponse) =>
           this.playerModel.findOneAndUpdate(
-            { apiId: player.id },         
+            { apiId: player.id },
             {
               apiId: player.id,
               firstName: player.first_name,
               lastName: player.last_name,
               position: player.position,
-              teamName: player.team?.full_name,
+              jerseyNumber: player.jersey_number,
+              college: player.college,
+              country: player.country,
+              draftYear: player.draft_year,
+              draftRound: player.draft_round,
+              draftNumber: player.draft_number,
+              team: {
+                id: player.team?.id,
+                name: player.team?.name,
+                fullName: player.team?.full_name,
+                abbreviation: player.team?.abbreviation,
+                city: player.team?.city,
+                conference: player.team?.conference,
+                division: player.team?.division,
+              },
             },
-            { upsert: true, new: true } 
-          )
-        )
+            { upsert: true, new: true },
+          ),
+        ),
       );
 
-       this.logger.log(`Players saved: ${data.data.length}`);
+      this.logger.log(`Players saved: ${data.data.length}`);
       return data;
     } catch (error) {
       this.logger.error('Failed to fetch players', (error as Error).stack);
       throw error;
     }
-    
   }
-  
 }
