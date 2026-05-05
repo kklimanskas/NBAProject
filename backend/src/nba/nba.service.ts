@@ -1,7 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger  } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { AppLogger } from '../logger/logger.service';
 import { QueryDto } from 'src/dto/query.dto';
 import { Player } from './schemas/player.schema';
 import { Model } from 'mongoose';
@@ -9,20 +8,19 @@ import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class NbaService {
+    private readonly logger = new Logger(NbaService.name);
   private readonly baseUrl = 'https://api.balldontlie.io/v1';
   private readonly apiKey = process.env.API_KEY;
 
   constructor(
     private readonly httpService: HttpService,
-    private readonly logger: AppLogger,
     @InjectModel(Player.name) private playerModel: Model<Player>,
   ) {
-    this.logger.setContext(NbaService.name);
   }
 
   async getPlayers(query: QueryDto) {
     try {
-      this.logger.info('Fetching players', { query });
+      this.logger.log('Fetching players');
       const { data } = await firstValueFrom(
         this.httpService.get(`${this.baseUrl}/players`, {
           headers: { Authorization: this.apiKey },
@@ -36,7 +34,7 @@ export class NbaService {
         await Promise.all(
         data.data.map((player: any) =>
           this.playerModel.findOneAndUpdate(
-            { apiId: player.id },         // find by apiId
+            { apiId: player.id },         
             {
               apiId: player.id,
               firstName: player.first_name,
@@ -44,12 +42,12 @@ export class NbaService {
               position: player.position,
               teamName: player.team?.full_name,
             },
-            { upsert: true, new: true }   // create if not exists
+            { upsert: true, new: true } 
           )
         )
       );
 
-      this.logger.info('Players saved', { count: data.data.length });
+       this.logger.log(`Players saved: ${data.data.length}`);
       return data;
     } catch (error) {
       this.logger.error('Failed to fetch players', (error as Error).stack);
