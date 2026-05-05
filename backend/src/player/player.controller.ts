@@ -9,4 +9,8 @@ export class PlayerController {
   getPlayers(@Query() query: QueryDto) {
     return this.playerService.getPlayers(query);
   }
+  @Get('populateDatabase')
+  populateDatabaseWithPlayers(@Query() query: QueryDto) {
+    return this.playerService.populateDatabaseWithPlayers(query);
+  }
 }
