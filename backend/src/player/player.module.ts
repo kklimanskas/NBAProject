@@ -13,4 +13,4 @@ import { Player, PlayerSchema } from './schemas/player.schema';
   controllers: [PlayerController],
   providers: [PlayerService],
 })
-export class NbaModule {}
+export class PlayerModule {}
