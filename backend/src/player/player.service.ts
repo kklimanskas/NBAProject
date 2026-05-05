@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { QueryDto } from 'src/dto/query.dto';
-import { Player } from './schemas/player.schema';
+import { Player } from '../schemas/player.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { PlayerResponse } from '../interfaces/player-api.interface';

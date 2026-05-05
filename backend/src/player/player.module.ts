@@ -3,7 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PlayerController } from './player.controller';
 import { PlayerService } from './player.service';
-import { Player, PlayerSchema } from './schemas/player.schema';
+import { Player, PlayerSchema } from '../schemas/player.schema';
 
 @Module({
    imports: [
