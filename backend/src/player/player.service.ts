@@ -10,7 +10,7 @@ import { PlayerResponse } from '../interfaces/player-api.interface';
 @Injectable()
 export class PlayerService {
   private readonly logger = new Logger(PlayerService.name);
-  private readonly baseUrl = 'https://api.balldontlie.io/v1';
+  private readonly baseUrl = process.env.BASE_URL;
   private readonly apiKey = process.env.API_KEY;
 
   constructor(
