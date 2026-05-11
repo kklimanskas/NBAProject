@@ -18,7 +18,7 @@ export class PlayerService {
     @InjectModel(Player.name) private playerModel: Model<Player>,
   ) {}
 
-  async getPlayers(query: QueryDto) {
+  async fetchPlayers(query: QueryDto) {
     try {
       this.logger.log('Fetching players');
       const { data } = await firstValueFrom(
