@@ -3,8 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { NbaModule } from './nba/nba.module';
-import { LoggerModule } from './logger/logger.module';
+import { PlayerModule } from './player/player.module';
 
 @Module({
   imports: [
@@ -15,8 +14,7 @@ import { LoggerModule } from './logger/logger.module';
         uri: config.get<string>('MONGO_URI'),
       }),
     }),
-    NbaModule,
-    LoggerModule
+    PlayerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
