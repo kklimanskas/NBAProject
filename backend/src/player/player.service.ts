@@ -5,7 +5,7 @@ import { PaginationDto } from 'src/dto/pagination.dto';
 import { Player } from '../schemas/player.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { PlayerResponse } from '../interfaces/player-api.interface';
+import { PlayerModel, FetchPlayerResponse } from '../interfaces/player-api.interface';
 
 @Injectable()
 export class PlayerService {
@@ -18,11 +18,11 @@ export class PlayerService {
     @InjectModel(Player.name) private playerModel: Model<Player>,
   ) {}
 
-  async fetchPlayers(query: PaginationDto) {
+  async fetchPlayers(query: PaginationDto): Promise<FetchPlayerResponse<PlayerModel>> {
     try {
       this.logger.log('Fetching players');
-      const { data } = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/players`, {
+      const response = await firstValueFrom(
+        this.httpService.get<FetchPlayerResponse<PlayerModel>>(`${this.baseUrl}/players`, {
           headers: { Authorization: this.apiKey },
           params: {
             page: query.page,
@@ -31,27 +31,19 @@ export class PlayerService {
           },
         }),
       );
-      return data;
+      return response.data; 
     } catch (error) {
       this.logger.error('Failed to fetch players', (error as Error).stack);
       throw error;
     }
   }
-  async populateDatabaseWithPlayers(query: PaginationDto) {
+
+  async populateDatabaseWithPlayers(query: PaginationDto): Promise<FetchPlayerResponse<PlayerModel>> {
     try {
-      this.logger.log('Fetching players');
-      const { data } = await firstValueFrom(
-        this.httpService.get(`${this.baseUrl}/players`, {
-          headers: { Authorization: this.apiKey },
-          params: {
-            page: query.page,
-            per_page: query.perPage,
-            search: query.search,
-          },
-        }),
-      );
+      const response = await this.fetchPlayers(query);
+
       await Promise.all(
-        data.data.map((player: PlayerResponse) =>
+        response.data.map((player: PlayerModel) =>
           this.playerModel.findOneAndUpdate(
             { apiId: player.id },
             {
@@ -80,10 +72,10 @@ export class PlayerService {
         ),
       );
 
-      this.logger.log(`Players saved: ${data.data.length}`);
-      return data;
+      this.logger.log(`Players saved: ${response.data.length}`);
+      return response;
     } catch (error) {
-      this.logger.error('Failed to fetch players', (error as Error).stack);
+      this.logger.error('Failed to populate players', (error as Error).stack);
       throw error;
     }
   }
