@@ -12,7 +12,7 @@ export class TeamController {
     return this.teamService.fetchTeams(query);
   }
 
-  @Get('populate')
+  @Patch('populate')
   populateTeams(@Query() query: PaginationDto) {
     return this.teamService.populateDatabaseWithTeams(query);
   }
