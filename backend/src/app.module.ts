@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PlayerModule } from './player/player.module';
-
+import { TeamModule } from './team/team.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -15,6 +15,7 @@ import { PlayerModule } from './player/player.module';
       }),
     }),
     PlayerModule,
+    TeamModule
   ],
   controllers: [AppController],
   providers: [AppService],
