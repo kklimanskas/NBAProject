@@ -1,4 +1,4 @@
-export interface PlayerResponse {
+export interface PlayerModel {
   id: number;
   first_name: string;
   last_name: string;
@@ -18,4 +18,8 @@ export interface PlayerResponse {
     conference: string;
     division: string;
   };
+}
+
+export interface FetchPlayerResponse<T>{
+  data:T[];
 }
