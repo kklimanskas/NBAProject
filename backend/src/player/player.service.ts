@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { QueryDto } from 'src/dto/query.dto';
+import { PaginationDto } from 'src/dto/pagination.dto';
 import { Player } from '../schemas/player.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,7 +18,7 @@ export class PlayerService {
     @InjectModel(Player.name) private playerModel: Model<Player>,
   ) {}
 
-  async fetchPlayers(query: QueryDto) {
+  async fetchPlayers(query: PaginationDto) {
     try {
       this.logger.log('Fetching players');
       const { data } = await firstValueFrom(
@@ -37,7 +37,7 @@ export class PlayerService {
       throw error;
     }
   }
-  async populateDatabaseWithPlayers(query: QueryDto) {
+  async populateDatabaseWithPlayers(query: PaginationDto) {
     try {
       this.logger.log('Fetching players');
       const { data } = await firstValueFrom(

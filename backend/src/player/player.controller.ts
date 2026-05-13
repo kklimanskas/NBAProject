@@ -1,16 +1,16 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Patch, Query } from '@nestjs/common';
 import { PlayerService } from './player.service';
-import { QueryDto } from 'src/dto/query.dto';
+import { PaginationDto } from 'src/dto/pagination.dto';
 @Controller('player')
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
-  @Get('players')
-  getPlayers(@Query() query: QueryDto) {
-    return this.playerService.getPlayers(query);
+  @Get('players-from-api')
+  getPlayers(@Query() query: PaginationDto) {
+    return this.playerService.fetchPlayers(query);
   }
-  @Get('populateDatabase')
-  populateDatabaseWithPlayers(@Query() query: QueryDto) {
+  @Patch('fill-database')
+  populateDatabaseWithPlayers(@Query() query: PaginationDto) {
     return this.playerService.populateDatabaseWithPlayers(query);
   }
 }
