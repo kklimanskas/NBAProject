@@ -1,5 +1,5 @@
-export interface TeamApi {
-  id: number;
+export interface TeamModel {
+  apiId: number;
   name: string;
   full_name: string;
   abbreviation: string;

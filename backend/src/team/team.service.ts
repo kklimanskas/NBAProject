@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Team } from '../schemas/team.schema';
-import { TeamApi, FetchTeamResponse } from '../interfaces/team-api.interface';
+import { TeamModel, FetchTeamResponse } from '../interfaces/team-api.interface';
 import { PaginationDto } from 'src/dto/pagination.dto';
 
 @Injectable()
@@ -18,11 +18,11 @@ export class TeamService {
     @InjectModel(Team.name) private teamModel: Model<Team>,
   ) {}
 
-  async fetchTeams(query: PaginationDto): Promise<FetchTeamResponse<TeamApi>> {
+  async fetchTeams(query: PaginationDto): Promise<FetchTeamResponse<TeamModel>> {
     try {
       this.logger.log('Fetching teams');
       const response = await firstValueFrom(
-        this.httpService.get<FetchTeamResponse<TeamApi>>(`${this.baseUrl}/teams`, {
+        this.httpService.get<FetchTeamResponse<TeamModel>>(`${this.baseUrl}/teams`, {
           headers: { Authorization: this.apiKey },
           params: {
             page: query.page,
@@ -37,16 +37,16 @@ export class TeamService {
     }
   }
 
-  async populateDatabaseWithTeams(query: PaginationDto): Promise<FetchTeamResponse<TeamApi>> {
+  async populateDatabaseWithTeams(query: PaginationDto): Promise<FetchTeamResponse<TeamModel>> {
     try {
       const response = await this.fetchTeams(query);
 
       await Promise.all(
-        response.data.map((team: TeamApi) =>
+        response.data.map((team: TeamModel) =>
           this.teamModel.findOneAndUpdate(
-            { apiId: team.id },
+            { apiId: team.apiId },
             {
-              apiId: team.id,
+              apiId: team.apiId,
               name: team.name,
               fullName: team.full_name,
               abbreviation: team.abbreviation,
