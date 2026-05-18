@@ -32,24 +32,8 @@ export class Player {
   @Prop()
   draftNumber: number = 0;
 
-  @Prop({ type: Object })
-  team: {
-    id: number;
-    name: string;
-    fullName: string;
-    abbreviation: string;
-    city: string;
-    conference: string;
-    division: string;
-  } = {
-    id: 0,
-    name: '',
-    fullName: '',
-    abbreviation: '',
-    city: '',
-    conference: '',
-    division: '',
-  };
+  @Prop()
+  team: number = 0;
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);
