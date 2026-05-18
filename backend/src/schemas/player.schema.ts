@@ -34,6 +34,9 @@ export class Player {
 
   @Prop()
   team: number = 0;
+
+  @Prop({ default: false })
+  isDeleted: boolean = false;
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);
