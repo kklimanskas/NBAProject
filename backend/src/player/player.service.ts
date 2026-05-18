@@ -5,7 +5,11 @@ import { PaginationDto } from 'src/dto/pagination.dto';
 import { Player } from '../schemas/player.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { PlayerModel, FetchPlayerResponse } from '../interfaces/player-api.interface';
+import {
+  PlayerModel,
+  FetchPlayerResponse,
+} from '../interfaces/player-api.interface';
+import { Team } from 'src/schemas/team.schema';
 
 @Injectable()
 export class PlayerService {
@@ -16,29 +20,37 @@ export class PlayerService {
   constructor(
     private readonly httpService: HttpService,
     @InjectModel(Player.name) private playerModel: Model<Player>,
+    @InjectModel(Team.name) private teamModel: Model<Team>,
   ) {}
 
-  async fetchPlayers(query: PaginationDto): Promise<FetchPlayerResponse<PlayerModel>> {
+  async fetchPlayers(
+    query: PaginationDto,
+  ): Promise<FetchPlayerResponse<PlayerModel>> {
     try {
       this.logger.log('Fetching players');
       const response = await firstValueFrom(
-        this.httpService.get<FetchPlayerResponse<PlayerModel>>(`${this.baseUrl}/players`, {
-          headers: { Authorization: this.apiKey },
-          params: {
-            page: query.page,
-            per_page: query.perPage,
-            search: query.search,
+        this.httpService.get<FetchPlayerResponse<PlayerModel>>(
+          `${this.baseUrl}/players`,
+          {
+            headers: { Authorization: this.apiKey },
+            params: {
+              page: query.page,
+              per_page: query.perPage,
+              search: query.search,
+            },
           },
-        }),
+        ),
       );
-      return response.data; 
+      return response.data;
     } catch (error) {
       this.logger.error('Failed to fetch players', (error as Error).stack);
       throw error;
     }
   }
 
-  async populateDatabaseWithPlayers(query: PaginationDto): Promise<FetchPlayerResponse<PlayerModel>> {
+  async populateDatabaseWithPlayers(
+    query: PaginationDto,
+  ): Promise<FetchPlayerResponse<PlayerModel>> {
     try {
       const response = await this.fetchPlayers(query);
 
@@ -57,15 +69,7 @@ export class PlayerService {
               draftYear: player.draft_year,
               draftRound: player.draft_round,
               draftNumber: player.draft_number,
-              team: {
-                id: player.team?.id,
-                name: player.team?.name,
-                fullName: player.team?.full_name,
-                abbreviation: player.team?.abbreviation,
-                city: player.team?.city,
-                conference: player.team?.conference,
-                division: player.team?.division,
-              },
+              team: player.team?.id,
             },
             { upsert: true, new: true },
           ),
@@ -76,6 +80,38 @@ export class PlayerService {
       return response;
     } catch (error) {
       this.logger.error('Failed to populate players', (error as Error).stack);
+      throw error;
+    }
+  }
+
+  async getPlayers(query: PaginationDto) {
+    try {
+      this.logger.log('Fetching players from database');
+      const players = await this.playerModel
+        .find()
+        .skip((query.page - 1) * query.perPage)
+        .limit(query.perPage);
+
+      const teams = await this.teamModel.find();
+
+      const playersWithTeams = players.map((player) => {
+        const team = teams.find((t) => t.apiId === player.team);
+        return { ...player.toObject(), team };
+      });
+
+      const total = await this.playerModel.countDocuments({ isDeleted: false });
+
+      return {
+        data: playersWithTeams,
+        meta: {
+          total_count: total,
+          current_page: query.page,
+          per_page: query.perPage,
+          total_pages: Math.ceil(total / query.perPage),
+        },
+      };
+    } catch (error) {
+      this.logger.error('Failed to get players', (error as Error).stack);
       throw error;
     }
   }
