@@ -17,7 +17,7 @@ export interface Player {
   position: Position;
   height: string;
   weight: string;
-  jersey_number: string;
+  jerseyNumber: string;
   college: string;
   country: string;
   draftYear: number;

@@ -127,7 +127,7 @@ const PlayerDetail: React.FC = () => {
                 }}
               >
                 <Typography sx={{ fontVariant:"h1", fontWeight:"bold", color:"primary"}}>
-                  #{player.jersey_number}
+                  #{player.jerseyNumber}
                 </Typography>
               </Box>
             </Grid>
@@ -135,7 +135,7 @@ const PlayerDetail: React.FC = () => {
               <Typography sx={{ fontVariant:"h1", fontWeight:"bold", color:"primary", variant:"h3", component:"h1"}} gutterBottom>
                 {player.firstName} {player.lastName}
               </Typography>
-              <Stack sx={{ direction:"row", spacing:1, flexWrap:"wrap"}} useFlexGap>
+              <Stack sx={{ display:"flex", flexDirection:"row", spacing:1, flexWrap:"wrap"}} useFlexGap>
                 <Chip
                   icon={<SportsBasketballIcon />}
                   label={getPositionFullName(player.position)}
@@ -229,7 +229,7 @@ const PlayerDetail: React.FC = () => {
                   Jersey
                 </Typography>
                 <Typography sx={{ variant:"h5", fontWeight:"bold"}} >
-                  #{player.jersey_number}
+                  #{player.jerseyNumber}
                 </Typography>
               </Paper>
             </Grid>
