@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { PlayersResponse } from '../types/nba';
+import type { PlayersResponse, PlayerResponse } from '../types/nba';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -16,4 +16,9 @@ export const fetchPlayers = async (
     params: { page, perPage, search, position, country },
   });
   return data;
+};
+
+export const fetchPlayer = async (id: number): Promise<PlayerResponse> => {
+  const response = await api.get<PlayerResponse>(`/player/${id}`);
+  return response.data;
 };
