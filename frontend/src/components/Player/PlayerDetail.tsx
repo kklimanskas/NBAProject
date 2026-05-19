@@ -145,6 +145,7 @@ const PlayerDetail: React.FC = () => {
                     fontWeight: 'bold',
                     fontSize: '1rem',
                     py: 2,
+                    mr: 0.5
                   }}
                 />
                 <Chip
