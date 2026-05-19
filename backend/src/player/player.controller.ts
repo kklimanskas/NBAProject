@@ -6,11 +6,15 @@ export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
   @Get('players-from-api')
-  getPlayers(@Query() query: PaginationDto) {
+  fetchPlayers(@Query() query: PaginationDto) {
     return this.playerService.fetchPlayers(query);
   }
-  @Patch('fill-database')
+  @Get('fill-database')
   populateDatabaseWithPlayers(@Query() query: PaginationDto) {
     return this.playerService.populateDatabaseWithPlayers(query);
+  }
+  @Get('get')
+  getPlayers(@Query() query: PaginationDto) {
+    return this.playerService.getPlayers(query);
   }
 }
