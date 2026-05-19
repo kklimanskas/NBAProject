@@ -12,6 +12,12 @@ export class PaginationDto {
   @Type(() => Number)
   @IsInt()
   @Max(100)
+  id?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Max(100)
   perPage: number = 25;
 
   @IsOptional()
