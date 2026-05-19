@@ -121,7 +121,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
           </Stack>
 
           <Typography gutterBottom sx={{ variant: "body2", color: "text.secondary" }}>
-            {player.team?.full_name}
+            {player.team?.fullName}
           </Typography>
 
           <Stack sx={{ direction: "row", spacing: 2, mt: 2 }}>
