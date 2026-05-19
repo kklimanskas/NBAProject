@@ -6,12 +6,12 @@ export interface Team {
   division: Division;
   city: string;
   name: string;
-  full_name: string;
+  fullName: string;
   abbreviation: string;
 }
 
 export interface Player {
-  id: number;
+  apiId: number;
   firstName: string;
   lastName: string;
   position: Position;
