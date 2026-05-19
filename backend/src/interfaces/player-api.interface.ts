@@ -7,6 +7,8 @@ export interface PlayerModel {
   last_name: string;
   position: Position;
   jersey_number: string;
+  weight: string;
+  height: string;
   college: string;
   country: string;
   draft_year: number;
