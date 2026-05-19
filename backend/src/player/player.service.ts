@@ -62,6 +62,8 @@ export class PlayerService {
               apiId: player.id,
               firstName: player.first_name,
               lastName: player.last_name,
+              weight: player.weight,
+              height: player.height,
               position: player.position,
               jerseyNumber: player.jersey_number,
               college: player.college,
@@ -112,6 +114,32 @@ export class PlayerService {
       };
     } catch (error) {
       this.logger.error('Failed to get players', (error as Error).stack);
+      throw error;
+    }
+  }
+  async fetchPlayer(query: PaginationDto) {
+    try {
+      this.logger.log('Fetching player from database');
+
+      const player = await this.playerModel.findOne({
+        apiId: query.id,
+        isDeleted: false,
+      });
+
+      if (!player) {
+        this.logger.warn(`Player with apiId ${query.id} not found`);
+        return null;
+      }
+
+      const team = await this.teamModel.findOne({
+        apiId: player.team,
+      });
+
+      return {
+        data: { ...player.toObject(), team },
+      };
+    } catch (error) {
+      this.logger.error('Failed to get player', (error as Error).stack);
       throw error;
     }
   }

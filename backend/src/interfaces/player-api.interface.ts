@@ -1,11 +1,14 @@
 import { TeamModel } from "./team-api.interface";
+import { Position } from "src/enums/index.enum";
 
 export interface PlayerModel {
   id: number;
   first_name: string;
   last_name: string;
-  position: string;
+  position: Position;
   jersey_number: string;
+  weight: string;
+  height: string;
   college: string;
   country: string;
   draft_year: number;

@@ -15,6 +15,12 @@ export class Player {
   position: string = '';
 
   @Prop()
+  height: string = '';
+
+  @Prop()
+  weight: string = '';
+
+  @Prop()
   jerseyNumber: string = '';
 
   @Prop()
