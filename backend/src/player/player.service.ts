@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/dto/pagination.dto';
+import { PlayerDto } from 'src/dto/player.dto';
 import { Player } from '../schemas/player.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -143,4 +144,39 @@ export class PlayerService {
       throw error;
     }
   }
+ 
+
+ async updatePlayer(playerDto: PlayerDto): Promise<Player> {
+  try {
+    this.logger.log(`Updating player ${playerDto.apiId}`);
+    const player = await this.playerModel.findOneAndUpdate(
+      { apiId: playerDto.apiId, isDeleted: false },
+      { ...playerDto },
+      { new: true },
+    );
+
+    if (!player) throw new NotFoundException(`Player ${playerDto.apiId} not found`);
+    return player;
+  } catch (error) {
+    this.logger.error(`Failed to update player ${playerDto.apiId}`, (error as Error).stack);
+    throw error;
+  }
+}
+
+async deletePlayer(id: string): Promise<{ message: string }> {
+  try {
+    this.logger.log(`Soft deleting player ${id}`);
+    const player = await this.playerModel.findOneAndUpdate(
+      { _id: id, isDeleted: false },
+      { isDeleted: true},
+      { new: true },
+    );
+
+    if (!player) throw new NotFoundException(`Player ${id} not found`);
+    return { message: 'Player deleted successfully' };
+  } catch (error) {
+    this.logger.error(`Failed to delete player ${id}`, (error as Error).stack);
+    throw error;
+  }
+}
 }
