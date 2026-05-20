@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
   Typography,
@@ -12,40 +12,42 @@ import {
   Stack,
   Divider,
   Alert,
-} from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
-import SchoolIcon from '@mui/icons-material/School';
-import PublicIcon from '@mui/icons-material/Public';
-import { fetchPlayer } from '../../api/playerApi';
-import type { Player } from '../../types/nba';
-import { Position } from '../../enums/index.enum';
+} from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
+import SchoolIcon from "@mui/icons-material/School";
+import PublicIcon from "@mui/icons-material/Public";
+import { fetchPlayer, updatePlayer } from "../../api/playerApi";
+import type { Player } from "../../types/nba";
+import { Position } from "../../enums/index.enum";
+import { PlayerEditDialog, ConfirmDialog } from "./PlayerDialogs";
+import type { UpdatePlayerPayload } from "../../types/nba";
 
 const getPositionColor = (position: string) => {
   switch (position) {
-    case 'G':
-      return '#4CAF50';
-    case 'F':
-      return '#2196F3';
-    case 'C':
-      return '#FF9800';
+    case "G":
+      return "#4CAF50";
+    case "F":
+      return "#2196F3";
+    case "C":
+      return "#FF9800";
     default:
-      return '#9E9E9E';
+      return "#9E9E9E";
   }
 };
 
 const getPositionFullName = (position: string) => {
   switch (position) {
     case Position.G:
-         return "Guard";
-       case Position.F: 
-         return "Forward";
-       case Position.C:
-         return "Center";
-       case Position.G_F:
-         return "Guard-Forward";
-       case Position.F_C:
-         return "Forward-Center";
+      return "Guard";
+    case Position.F:
+      return "Forward";
+    case Position.C:
+      return "Center";
+    case Position.G_F:
+      return "Guard-Forward";
+    case Position.F_C:
+      return "Forward-Center";
     default:
       return position;
   }
@@ -58,6 +60,10 @@ const PlayerDetail: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+
   useEffect(() => {
     const loadPlayer = async () => {
       if (!id) return;
@@ -68,14 +74,69 @@ const PlayerDetail: React.FC = () => {
         const response = await fetchPlayer(Number(id));
         setPlayer(response.data);
       } catch (err) {
-        setError(err instanceof Error ? err : new Error('Failed to load player'));
+        setError(
+          err instanceof Error ? err : new Error("Failed to load player"),
+        );
       } finally {
         setIsLoading(false);
       }
     };
 
     loadPlayer();
-  }, []);
+  }, [id]);
+
+  const handleOpenEdit = () => {
+    setIsEditOpen(true);
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditOpen(false);
+  };
+
+  const handleOpenDeleteConfirm = () => {
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    setIsDeleteConfirmOpen(false);
+  };
+
+  const handleSaveEdit = async (updatedPlayer: Player) => {
+    try {
+      if (!player) return;
+      const mapToPayload = (p: Player): UpdatePlayerPayload => ({
+        firstName: p.firstName,
+        lastName: p.lastName,
+        college: p.college,
+        country: p.country,
+        jerseyNumber: String(p.jerseyNumber),
+        weight: p.weight,
+        height: p.height,
+        position: p.position,
+        draftYear: p.draftYear,
+        draftRound: p.draftRound,
+        draftNumber: p.draftNumber,
+        team: p.team?.id,
+      });
+      const payload = mapToPayload(updatedPlayer);
+      const response = await updatePlayer(updatedPlayer.apiId, payload);
+      if (response) {
+        setPlayer(updatedPlayer);
+        setIsEditOpen(false);
+      } else throw new Error("Failed to update player");
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while updating the player. Please try again.");
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!player) return;
+
+    // TODO: call your soft-delete API here
+    setDeleted(true);
+    setIsDeleteConfirmOpen(false);
+  };
 
   if (isLoading) {
     return (
@@ -89,7 +150,11 @@ const PlayerDetail: React.FC = () => {
   if (error || !player) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')} sx={{ mb: 2 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/")}
+          sx={{ mb: 2 }}
+        >
           Back to Players
         </Button>
         <Alert severity="error">Player not found</Alert>
@@ -99,11 +164,34 @@ const PlayerDetail: React.FC = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/')} sx={{ mb: 3 }}>
+      <Button
+        startIcon={<ArrowBackIcon />}
+        onClick={() => navigate("/")}
+        sx={{ mb: 3 }}
+      >
         Back to Players
       </Button>
 
-      <Paper elevation={3} sx={{ overflow: 'hidden' }}>
+      {deleted && (
+        <Alert severity="warning" sx={{ mb: 3 }}>
+          This player has been soft deleted.
+        </Alert>
+      )}
+
+      <Stack direction="row" spacing={2} sx={{ mb: 3 }}>
+        <Button variant="contained" onClick={handleOpenEdit}>
+          Edit Player
+        </Button>
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={handleOpenDeleteConfirm}
+        >
+          Soft Delete
+        </Button>
+      </Stack>
+
+      <Paper elevation={3} sx={{ overflow: "hidden" }}>
         {/* Header */}
         <Box
           sx={{
@@ -111,47 +199,70 @@ const PlayerDetail: React.FC = () => {
             p: 4,
           }}
         >
-          <Grid container sx={{ spacing:3, alignItems:"center"}}>
+          <Grid container sx={{ spacing: 3, alignItems: "center" }}>
             <Grid size={{ xs: 12, md: 4 }}>
               <Box
                 sx={{
                   width: 150,
                   height: 150,
-                  borderRadius: '50%',
-                  backgroundColor: 'background.paper',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  borderRadius: "50%",
+                  backgroundColor: "background.paper",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   boxShadow: 4,
-                  mx: 'auto',
+                  mx: "auto",
                 }}
               >
-                <Typography sx={{ fontVariant:"h1", fontWeight:"bold", color:"primary"}}>
+                <Typography
+                  sx={{
+                    fontVariant: "h1",
+                    fontWeight: "bold",
+                    color: "primary",
+                  }}
+                >
                   #{player.jerseyNumber}
                 </Typography>
               </Box>
             </Grid>
             <Grid size={{ xs: 12, md: 8 }}>
-              <Typography sx={{ fontVariant:"h1", fontWeight:"bold", color:"primary", variant:"h3", component:"h1"}} gutterBottom>
+              <Typography
+                sx={{
+                  fontVariant: "h1",
+                  fontWeight: "bold",
+                  color: "primary",
+                  variant: "h3",
+                  component: "h1",
+                }}
+                gutterBottom
+              >
                 {player.firstName} {player.lastName}
               </Typography>
-              <Stack sx={{ display:"flex", flexDirection:"row", spacing:1, flexWrap:"wrap"}} useFlexGap>
+              <Stack
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  spacing: 1,
+                  flexWrap: "wrap",
+                }}
+                useFlexGap
+              >
                 <Chip
                   icon={<SportsBasketballIcon />}
                   label={getPositionFullName(player.position)}
                   sx={{
                     backgroundColor: getPositionColor(player.position),
-                    color: 'white',
-                    fontWeight: 'bold',
-                    fontSize: '1rem',
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: "1rem",
                     py: 2,
-                    mr: 0.5
+                    mr: 0.5,
                   }}
                 />
                 <Chip
                   label={player.team.abbreviation}
                   variant="outlined"
-                  sx={{ fontWeight: 'bold', fontSize: '1rem', py: 2 }}
+                  sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}
                 />
               </Stack>
             </Grid>
@@ -161,7 +272,7 @@ const PlayerDetail: React.FC = () => {
         {/* Content */}
         <Box sx={{ p: 4 }}>
           {/* Team Info */}
-          <Typography sx={{ variant:"h5", fontWeight:"bold"}} gutterBottom>
+          <Typography sx={{ variant: "h5", fontWeight: "bold" }} gutterBottom>
             Team Information
           </Typography>
           <Paper variant="outlined" sx={{ p: 3, mb: 4 }}>
@@ -190,46 +301,46 @@ const PlayerDetail: React.FC = () => {
           <Divider sx={{ my: 3 }} />
 
           {/* Physical Stats */}
-          <Typography sx={{ variant:"h5", fontWeight:"bold"}} gutterBottom>
+          <Typography sx={{ variant: "h5", fontWeight: "bold" }} gutterBottom>
             Physical Stats
           </Typography>
           <Grid container spacing={3} sx={{ mb: 4 }}>
             <Grid size={{ xs: 6, sm: 3 }}>
-              <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+              <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="body2" color="text.secondary">
                   Height
                 </Typography>
-                <Typography sx={{ variant:"h5", fontWeight:"bold"}}>
+                <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
                   {player.height}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 6, sm: 3 }}>
-              <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+              <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="body2" color="text.secondary">
                   Weight
                 </Typography>
-                <Typography sx={{ variant:"h5", fontWeight:"bold"}} >
+                <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
                   {player.weight} lbs
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 6, sm: 3 }}>
-              <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+              <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="body2" color="text.secondary">
                   Position
                 </Typography>
-                <Typography sx={{ variant:"h5", fontWeight:"bold"}} >
+                <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
                   {player.position}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 6, sm: 3 }}>
-              <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+              <Paper variant="outlined" sx={{ p: 2, textAlign: "center" }}>
                 <Typography variant="body2" color="text.secondary">
                   Jersey
                 </Typography>
-                <Typography sx={{ variant:"h5", fontWeight:"bold"}} >
+                <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
                   #{player.jerseyNumber}
                 </Typography>
               </Paper>
@@ -239,23 +350,29 @@ const PlayerDetail: React.FC = () => {
           <Divider sx={{ my: 3 }} />
 
           {/* Background */}
-          <Typography sx={{ variant:"h5", fontWeight:"bold"}}  gutterBottom>
+          <Typography sx={{ variant: "h5", fontWeight: "bold" }} gutterBottom>
             Background
           </Typography>
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, sm: 6 }}>
-              <Stack sx={{direction:"row", spacing:2, alignItems:"center"}}>
+              <Stack
+                sx={{ direction: "row", spacing: 2, alignItems: "center" }}
+              >
                 <SchoolIcon color="action" />
                 <Box>
                   <Typography variant="body2" color="text.secondary">
                     College
                   </Typography>
-                  <Typography variant="body1">{player.college || 'N/A'}</Typography>
+                  <Typography variant="body1">
+                    {player.college || "N/A"}
+                  </Typography>
                 </Box>
               </Stack>
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
-              <Stack sx={{direction:"row", spacing:2, alignItems:"center"}}>
+              <Stack
+                sx={{ direction: "row", spacing: 2, alignItems: "center" }}
+              >
                 <PublicIcon color="action" />
                 <Box>
                   <Typography variant="body2" color="text.secondary">
@@ -270,32 +387,40 @@ const PlayerDetail: React.FC = () => {
           <Divider sx={{ my: 3 }} />
 
           {/* Draft Info */}
-          <Typography sx={{ variant:"h5", fontWeight:"bold"}}  gutterBottom>
+          <Typography sx={{ variant: "h5", fontWeight: "bold" }} gutterBottom>
             Draft Information
           </Typography>
           <Grid container spacing={3}>
             <Grid size={{ xs: 4 }}>
               <Paper
                 variant="outlined"
-                sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}
+                sx={{
+                  p: 2,
+                  textAlign: "center",
+                  backgroundColor: "action.hover",
+                }}
               >
                 <Typography variant="body2" color="text.secondary">
                   Year
                 </Typography>
-                <Typography sx={{ variant:"h5", fontWeight:"bold"}} >
-                  {player.draftYear  || "Undrafted"}
+                <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
+                  {player.draftYear || "Undrafted"}
                 </Typography>
               </Paper>
             </Grid>
             <Grid size={{ xs: 4 }}>
               <Paper
                 variant="outlined"
-                sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}
+                sx={{
+                  p: 2,
+                  textAlign: "center",
+                  backgroundColor: "action.hover",
+                }}
               >
                 <Typography variant="body2" color="text.secondary">
                   Round
                 </Typography>
-                <Typography sx={{ variant:"h5", fontWeight:"bold"}} >
+                <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
                   {player.draftRound || "Undrafted"}
                 </Typography>
               </Paper>
@@ -303,12 +428,16 @@ const PlayerDetail: React.FC = () => {
             <Grid size={{ xs: 4 }}>
               <Paper
                 variant="outlined"
-                sx={{ p: 2, textAlign: 'center', backgroundColor: 'action.hover' }}
+                sx={{
+                  p: 2,
+                  textAlign: "center",
+                  backgroundColor: "action.hover",
+                }}
               >
                 <Typography variant="body2" color="text.secondary">
                   Pick
                 </Typography>
-                <Typography sx={{ variant:"h5", fontWeight:"bold"}} >
+                <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
                   {player.draftNumber || "Undrafted"}
                 </Typography>
               </Paper>
@@ -316,6 +445,21 @@ const PlayerDetail: React.FC = () => {
           </Grid>
         </Box>
       </Paper>
+
+      <PlayerEditDialog
+        open={isEditOpen}
+        player={player}
+        onClose={handleCloseEdit}
+        onSave={handleSaveEdit}
+      />
+
+      <ConfirmDialog
+        open={isDeleteConfirmOpen}
+        title="Confirm Soft Delete"
+        message="Do you really want to do that? This will soft delete the player."
+        onClose={handleCloseDeleteConfirm}
+        onConfirm={handleConfirmDelete}
+      />
     </Container>
   );
 };
