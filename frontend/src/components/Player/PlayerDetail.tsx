@@ -20,7 +20,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import { fetchPlayer, updatePlayer } from "../../api/playerApi";
 import type { Player } from "../../types/nba";
 import { Position } from "../../enums/index.enum";
-import { PlayerEditDialog, ConfirmDialog } from "./PlayerDialogs";
+import { PlayerEditDialog, ConfirmDialog } from "./PlayerDialog";
 import type { UpdatePlayerPayload } from "../../types/nba";
 
 const getPositionColor = (position: string) => {
