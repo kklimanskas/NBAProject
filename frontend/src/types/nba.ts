@@ -39,3 +39,18 @@ export interface PlayersResponse {
 export interface PlayerResponse {
   data: Player;
 }
+
+export interface UpdatePlayerPayload {
+  firstName?: string;
+  lastName?: string;
+  college?: string;
+  country?: string;
+  jerseyNumber?: string;
+  weight?: string;
+  height?: string;
+  position?: string;
+  draftYear?: number;
+  draftRound?: number;
+  draftNumber?: number;
+  team?: number;
+}
