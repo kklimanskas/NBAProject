@@ -5,6 +5,8 @@ import { PlayerController } from './player.controller';
 import { PlayerService } from './player.service';
 import { Player, PlayerSchema } from '../schemas/player.schema';
 import { Team, TeamSchema } from '../schemas/team.schema';
+import { PlayerJob } from '../cronjobs/player.job';
+
 @Module({
    imports: [
     HttpModule,
@@ -15,6 +17,6 @@ import { Team, TeamSchema } from '../schemas/team.schema';
     ]),
   ],
   controllers: [PlayerController],
-  providers: [PlayerService],
+  providers: [PlayerService, PlayerJob],
 })
 export class PlayerModule {}
