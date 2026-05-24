@@ -10,11 +10,18 @@ import {
 import { PlayerService } from './player.service';
 import { PaginationDto } from 'src/dto/pagination.dto';
 import { PlayerDto } from 'src/dto/player.dto';
+//import { PlayerJob } from '../cronjobs/player.job';
 
 @Controller('player')
 export class PlayerController {
-  constructor(private readonly playerService: PlayerService) {}
-
+  constructor(
+    private readonly playerService: PlayerService,
+    // private readonly playerJob: PlayerJob
+  ) {}
+  // @Get('sync')
+  // syncPlayers() {
+  //   return this.playerJob.syncPlayers();
+  // }
   @Get('players-from-api')
   fetchPlayers(@Query() query: PaginationDto) {
     return this.playerService.fetchPlayers(query);
@@ -42,5 +49,10 @@ export class PlayerController {
   ) {
     playerData.apiId = id;
     return this.playerService.updatePlayer(playerData);
+  }
+
+  @Patch('delete/:id')
+  deletePlayer(@Param('id', ParseIntPipe) id: number) {
+    return this.playerService.deletePlayer(id);
   }
 }
