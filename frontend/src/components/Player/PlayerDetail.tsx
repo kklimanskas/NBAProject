@@ -22,7 +22,7 @@ import type { Player } from "../../types/nba";
 import { Position } from "../../enums/index.enum";
 import { PlayerEditDialog, ConfirmDialog } from "./PlayerDialog";
 import type { UpdatePlayerPayload } from "../../types/nba";
-
+import { deletePlayer } from "../../api/playerApi";
 const getPositionColor = (position: string) => {
   switch (position) {
     case "G":
@@ -63,6 +63,7 @@ const PlayerDetail: React.FC = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [deleted, setDeleted] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState("");
 
   useEffect(() => {
     const loadPlayer = async () => {
@@ -95,6 +96,7 @@ const PlayerDetail: React.FC = () => {
 
   const handleOpenDeleteConfirm = () => {
     setIsDeleteConfirmOpen(true);
+    setDeleted(false);
   };
 
   const handleCloseDeleteConfirm = () => {
@@ -132,10 +134,28 @@ const PlayerDetail: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     if (!player) return;
-
-    // TODO: call your soft-delete API here
-    setDeleted(true);
-    setIsDeleteConfirmOpen(false);
+    try {
+      const response = await deletePlayer(player.apiId);
+      if (response.message) {
+        setDeleted(true);
+        setDeleteMessage(response.message);
+        setIsDeleteConfirmOpen(false);
+        setTimeout(() => {
+          navigate("/");
+        }, 1000);
+      } else {
+        alert("An error occurred while deleting the player. Please try again.");
+        setIsDeleteConfirmOpen(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setIsDeleteConfirmOpen(false);
+      setDeleted(true);
+      setDeleteMessage(
+        "An error occurred while deleting the player. Please try again.",
+      );
+      //alert("An error occurred while updating the player. Please try again.");
+    }
   };
 
   if (isLoading) {
@@ -174,7 +194,7 @@ const PlayerDetail: React.FC = () => {
 
       {deleted && (
         <Alert severity="warning" sx={{ mb: 3 }}>
-          This player has been soft deleted.
+          {`${deleteMessage}`}
         </Alert>
       )}
 
