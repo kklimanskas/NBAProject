@@ -30,3 +30,8 @@ export const updatePlayer = async (
   const response = await api.patch<Player>(`/player/update/${id}`, payload);
   return response.data;
 };
+
+export const deletePlayer = async (id: number): Promise<{ message: string }> => {
+  const response = await api.patch<{ message: string }>(`/player/delete/${id}`);
+  return response.data;
+};
