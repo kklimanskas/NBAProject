@@ -98,9 +98,9 @@ This project pairs with a frontend React app (separate folder).
 - Player Discovery, Details, Search & Filter, Data Management, Real-time updates with React Query, Retry with cooldown and exponential backoff, Responsive Material UI design.
 
 **Tech Stack**
-- React 19, TypeScript, Vite, React Query, Axios, React Router, Material UI, Emotion, ESLint
+- React 19, TypeScript, Vite, React Query, Axios, React Router, Material UI, ESLint
 
-**Frontend Project Structure (example)**
+**Frontend Project Structure**
 ```
 src/
 ├── components/
