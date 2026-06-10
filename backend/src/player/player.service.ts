@@ -56,8 +56,15 @@ export class PlayerService {
       const response = await this.fetchPlayers(query);
 
       await Promise.all(
-        response.data.map((player: PlayerModel) =>
-          this.playerModel.findOneAndUpdate(
+        response.data.map(async (player: PlayerModel) => {
+          const exists = await this.playerModel.findOne({
+            apiId: player.id,
+            $or: [{ updatedAtDate: { $ne: null } }, { isDeleted: true }],
+          });
+
+          if (exists) return;
+
+          return this.playerModel.findOneAndUpdate(
             { apiId: player.id },
             {
               apiId: player.id,
@@ -75,8 +82,8 @@ export class PlayerService {
               team: player.team?.id,
             },
             { upsert: true, new: true },
-          ),
-        ),
+          );
+        }),
       );
 
       this.logger.log(`Players saved: ${response.data.length}`);
@@ -91,7 +98,7 @@ export class PlayerService {
     try {
       this.logger.log('Fetching players from database');
       const players = await this.playerModel
-        .find()
+        .find({ apiId: { $exists: true }, isDeleted: false })
         .skip((query.page - 1) * query.perPage)
         .limit(query.perPage);
 
@@ -144,39 +151,45 @@ export class PlayerService {
       throw error;
     }
   }
- 
 
- async updatePlayer(playerDto: PlayerDto): Promise<Player> {
-  try {
-    this.logger.log(`Updating player ${playerDto.apiId}`);
-    const player = await this.playerModel.findOneAndUpdate(
-      { apiId: playerDto.apiId, isDeleted: false },
-      { ...playerDto },
-      { new: true },
-    );
+  async updatePlayer(playerDto: PlayerDto): Promise<Player> {
+    try {
+      this.logger.log(`Updating player ${playerDto.apiId}`);
+      const player = await this.playerModel.findOneAndUpdate(
+        { apiId: playerDto.apiId, isDeleted: false },
+        { ...playerDto, updatedAtDate: new Date() },
+        { new: true },
+      );
 
-    if (!player) throw new NotFoundException(`Player ${playerDto.apiId} not found`);
-    return player;
-  } catch (error) {
-    this.logger.error(`Failed to update player ${playerDto.apiId}`, (error as Error).stack);
-    throw error;
+      if (!player)
+        throw new NotFoundException(`Player ${playerDto.apiId} not found`);
+      return player;
+    } catch (error) {
+      this.logger.error(
+        `Failed to update player ${playerDto.apiId}`,
+        (error as Error).stack,
+      );
+      throw error;
+    }
   }
-}
 
-async deletePlayer(id: string): Promise<{ message: string }> {
-  try {
-    this.logger.log(`Soft deleting player ${id}`);
-    const player = await this.playerModel.findOneAndUpdate(
-      { _id: id, isDeleted: false },
-      { isDeleted: true},
-      { new: true },
-    );
+  async deletePlayer(id: number): Promise<{ message: string }> {
+    try {
+      this.logger.log(`Soft deleting player ${id}`);
+      const player = await this.playerModel.findOneAndUpdate(
+        { apiId: id, isDeleted: false },
+        { isDeleted: true },
+        { new: true },
+      );
 
-    if (!player) throw new NotFoundException(`Player ${id} not found`);
-    return { message: 'Player deleted successfully' };
-  } catch (error) {
-    this.logger.error(`Failed to delete player ${id}`, (error as Error).stack);
-    throw error;
+      if (!player) throw new NotFoundException(`Player ${id} not found`);
+      return { message: 'Player deleted successfully' };
+    } catch (error) {
+      this.logger.error(
+        `Failed to delete player ${id}`,
+        (error as Error).stack,
+      );
+      throw error;
+    }
   }
-}
 }

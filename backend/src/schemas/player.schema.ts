@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: { createdAt: 'createdAt', updatedAt: false } })
 export class Player {
   @Prop({ required: true, unique: true })
   apiId: number = 0;
@@ -43,6 +43,9 @@ export class Player {
 
   @Prop({ default: false })
   isDeleted: boolean = false;
+
+  @Prop({ type: Date, default: null })
+  updatedAtDate: Date | null = null;
 }
 
 export const PlayerSchema = SchemaFactory.createForClass(Player);
