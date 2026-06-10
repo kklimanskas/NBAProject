@@ -1,6 +1,16 @@
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+  Patch,
+  Body,
+} from '@nestjs/common';
 import { PlayerService } from './player.service';
 import { PaginationDto } from 'src/dto/pagination.dto';
+import { PlayerDto } from 'src/dto/player.dto';
+
 @Controller('player')
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
@@ -24,5 +34,13 @@ export class PlayerController {
   ) {
     query.id = id;
     return this.playerService.fetchPlayer(query);
+  }
+  @Patch('update/:id')
+  updatePlayer(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() playerData: PlayerDto,
+  ) {
+    playerData.apiId = id;
+    return this.playerService.updatePlayer(playerData);
   }
 }

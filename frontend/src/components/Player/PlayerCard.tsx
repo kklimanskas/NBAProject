@@ -87,7 +87,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player }) => {
             }}
           >
             <Typography sx={{ variant: "h3", fontWeight: "bold", color: "primary" }}>
-              #{player.jersey_number}
+              #{player.jerseyNumber}
             </Typography>
           </Box>
           <Chip
