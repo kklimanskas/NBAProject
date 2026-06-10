@@ -3,7 +3,7 @@
 A full-stack NBA data application. This repository contains the backend (NestJS) for the NBA Project; frontend details (React + Vite) are included below for reference.
 
 **Overview**
-- **Backend:** NestJS + TypeScript server providing player and team APIs, schema validation, and scheduled jobs.
+- **Backend:** NestJS + TypeScript server providing player and team APIs, schema validation, and scheduled jobs, Swagger for API documentation.
 - **Frontend (summary):** React + Vite app using TypeScript, React Query, Material UI for browsing and managing NBA player data (details included in the Frontend section).
 
 **Features**
@@ -15,7 +15,7 @@ A full-stack NBA data application. This repository contains the backend (NestJS)
 - **Resilient Fetching:** Frontend uses retry + exponential backoff policies for robust API calls.
 
 **Tech Stack**
-- **Backend:** NestJS, TypeScript, @nestjs/mongoose (Mongoose), @nestjs/schedule (cron jobs), Axios
+- **Backend:** NestJS, TypeScript, @nestjs/mongoose (Mongoose), @nestjs/schedule (cron jobs), Axios, Swagger
 - **Frontend:** React 19, TypeScript, Vite, React Query, Material UI (see Frontend section)
 
 **Backend Project Structure**
@@ -89,6 +89,20 @@ npm run start:prod
 
 **Scheduled Jobs**
 - Background tasks live in `src/cronjobs` and are wired via `@nestjs/schedule` to run periodic jobs (for example, `player.job.ts`).
+
+**API Documentation (Swagger)**
+
+The backend API is documented using Swagger via the @nestjs/swagger package. Swagger automatically generates interactive API documentation from NestJS controllers and DTOs.
+
+**Access Swagger UI**
+
+After starting the backend server, the API documentation is available at:
+
+```bash
+http://localhost:3000/api
+```
+
+Swagger is configured in main.ts using SwaggerModule and DocumentBuilder. DTO classes are decorated with @ApiProperty, allowing automatic schema generation and validation visibility in the documentation.
 
 **Frontend (Summary)**
 
