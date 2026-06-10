@@ -23,6 +23,11 @@ import { Position } from "../../enums/index.enum";
 import { PlayerEditDialog, ConfirmDialog } from "./PlayerDialog";
 import type { UpdatePlayerPayload } from "../../types/nba";
 import { deletePlayer } from "../../api/playerApi";
+import {
+  useUpdatePlayer,
+  useDeletePlayer,
+} from "../../hooks/usePlayerMutations";
+
 const getPositionColor = (position: string) => {
   switch (position) {
     case "G":
@@ -65,6 +70,9 @@ const PlayerDetail: React.FC = () => {
   const [deleted, setDeleted] = useState(false);
   const [deleteMessage, setDeleteMessage] = useState("");
 
+  const { mutate: update, isPending: isUpdating } = useUpdatePlayer();
+  const { mutate: remove, isPending: isDeleting } = useDeletePlayer();
+
   useEffect(() => {
     const loadPlayer = async () => {
       if (!id) return;
@@ -103,59 +111,53 @@ const PlayerDetail: React.FC = () => {
     setIsDeleteConfirmOpen(false);
   };
 
-  const handleSaveEdit = async (updatedPlayer: Player) => {
-    try {
-      if (!player) return;
-      const mapToPayload = (p: Player): UpdatePlayerPayload => ({
-        firstName: p.firstName,
-        lastName: p.lastName,
-        college: p.college,
-        country: p.country,
-        jerseyNumber: String(p.jerseyNumber),
-        weight: p.weight,
-        height: p.height,
-        position: p.position,
-        draftYear: p.draftYear,
-        draftRound: p.draftRound,
-        draftNumber: p.draftNumber,
-        team: p.team?.id,
-      });
-      const payload = mapToPayload(updatedPlayer);
-      const response = await updatePlayer(updatedPlayer.apiId, payload);
-      if (response) {
-        setPlayer(updatedPlayer);
-        setIsEditOpen(false);
-      } else throw new Error("Failed to update player");
-    } catch (err) {
-      console.error(err);
-      alert("An error occurred while updating the player. Please try again.");
-    }
+  const handleSaveEdit = (updatedPlayer: Player) => {
+    if (!player) return;
+
+    const payload: UpdatePlayerPayload = {
+      firstName: updatedPlayer.firstName,
+      lastName: updatedPlayer.lastName,
+      college: updatedPlayer.college,
+      country: updatedPlayer.country,
+      jerseyNumber: String(updatedPlayer.jerseyNumber),
+      weight: updatedPlayer.weight,
+      height: updatedPlayer.height,
+      position: updatedPlayer.position,
+      draftYear: updatedPlayer.draftYear,
+      draftRound: updatedPlayer.draftRound,
+      draftNumber: updatedPlayer.draftNumber,
+      team: updatedPlayer.team?.id,
+    };
+
+    update(
+      { id: player.apiId, payload: payload },
+      {
+        onSuccess: () => {
+          setPlayer(updatedPlayer);
+          setIsEditOpen(false);
+        },
+        onError: () => {
+          alert("Failed to update player. Please try again.");
+        },
+      },
+    );
   };
 
   const handleConfirmDelete = async () => {
     if (!player) return;
-    try {
-      const response = await deletePlayer(player.apiId);
-      if (response.message) {
+    remove(player.apiId, {
+      onSuccess: (data) => {
         setDeleted(true);
-        setDeleteMessage(response.message);
+        setDeleteMessage(data.message);
         setIsDeleteConfirmOpen(false);
-        setTimeout(() => {
-          navigate("/");
-        }, 1000);
-      } else {
-        alert("An error occurred while deleting the player. Please try again.");
+        setTimeout(() => navigate("/"), 1000);
+      },
+      onError: () => {
         setIsDeleteConfirmOpen(false);
-      }
-    } catch (err) {
-      console.error(err);
-      setIsDeleteConfirmOpen(false);
-      setDeleted(true);
-      setDeleteMessage(
-        "An error occurred while deleting the player. Please try again.",
-      );
-      //alert("An error occurred while updating the player. Please try again.");
-    }
+        setDeleted(true);
+        setDeleteMessage("An error occurred while deleting the player.");
+      },
+    });
   };
 
   if (isLoading) {
