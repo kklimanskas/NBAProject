@@ -144,20 +144,5 @@ API_URL=http://localhost:3000
 - DTOs, validation pipes, and global interceptors are used for consistent request handling.
 - Cron jobs require `@nestjs/schedule` and will run when the app starts in environments where scheduling is desired.
 
-**Useful files**
-- [src/app.module.ts](src/app.module.ts)
-- [src/main.ts](src/main.ts)
-- [src/player/player.controller.ts](src/player/player.controller.ts)
-- [src/player/player.service.ts](src/player/player.service.ts)
-- [src/schemas/player.schema.ts](src/schemas/player.schema.ts)
-- [src/cronjobs/player.job.ts](src/cronjobs/player.job.ts)
-
 **Testing**
 - Unit and e2e tests live under `test/` and are run with `npm run test` and `npm run test:e2e`.
-
-**Troubleshooting**
-- If the backend fails to start, check `MONGO_URI` and ensure MongoDB is reachable.
-- Inspect logs printed to the console for startup errors and stack traces.
-
-**License**
-This repository is part of the NBA Project. See project owner for licensing details.
