@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, Typography, Chip, Stack } from '@mui/material';
-import type { Team } from '../../types/nbaPlayerTypes';
+import type { Team } from '../../types/nbaTeamTypes';
 
 interface TeamCardProps {
   team: Team;
