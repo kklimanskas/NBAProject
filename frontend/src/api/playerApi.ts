@@ -1,6 +1,6 @@
 import axios from "axios";
-import type { PlayersResponse, PlayerResponse } from "../types/nba";
-import type { Player, UpdatePlayerPayload } from "../types/nba";
+import type { PlayersResponse, PlayerResponse } from "../types/nbaPlayerTypes";
+import type { Player, UpdatePlayerPayload } from "../types/nbaPlayerTypes";
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
