@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchPlayers } from '../api/playerApi';
+import { fetchPlayers } from '../../api/playerApi';
 
 interface UsePlayersParams {
   page: number;

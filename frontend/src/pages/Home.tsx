@@ -13,7 +13,7 @@ import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 import PlayerCard from "../components/Player/PlayerCard";
 import { fetchPlayers } from "../api/playerApi";
 import type { PlayersResponse } from "../types/nba";
-import { usePlayers } from "../hooks/usePlayer";
+import { usePlayers } from "../hooks/player/useGetPlayer";
 
 const PLAYERS_PER_PAGE = 6;
 

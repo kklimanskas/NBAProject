@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deletePlayer } from '../api/playerApi';
-import type { Player, UpdatePlayerPayload } from '../types/nba';
+import { deletePlayer } from '../../api/playerApi';
+import type { Player, UpdatePlayerPayload } from '../../types/nba';
 
 export const useDeletePlayer = () => {
   const queryClient = useQueryClient();

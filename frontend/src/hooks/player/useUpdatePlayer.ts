@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updatePlayer } from '../api/playerApi';
-import type { Player, UpdatePlayerPayload } from '../types/nba';
+import { updatePlayer } from '../../api/playerApi';
+import type { Player, UpdatePlayerPayload } from '../../types/nba';
 
 export const useUpdatePlayer = () => {
   const queryClient = useQueryClient();
