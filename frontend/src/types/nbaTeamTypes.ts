@@ -1,6 +1,6 @@
-import { Position, Conference, Division } from "../enums/index.enum";
+import { Conference, Division } from "../enums/index.enum";
 
-export interface Team {
+interface Team {
   id: number;
   conference: Conference;
   division: Division;
@@ -9,3 +9,5 @@ export interface Team {
   fullName: string;
   abbreviation: string;
 }
+
+export type { Team }
