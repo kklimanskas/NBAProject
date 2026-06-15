@@ -23,10 +23,8 @@ import { Position } from "../../enums/index.enum";
 import { PlayerEditDialog, ConfirmDialog } from "./PlayerDialog";
 import type { UpdatePlayerPayload } from "../../types/nba";
 import { deletePlayer } from "../../api/playerApi";
-import {
-  useUpdatePlayer,
-  useDeletePlayer,
-} from "../../hooks/usePlayerMutations";
+import { useUpdatePlayer } from "../../hooks/useUpdatePlayer";
+import { useDeletePlayer } from "../../hooks/useDeletePlayer";
 
 const getPositionColor = (position: string) => {
   switch (position) {
