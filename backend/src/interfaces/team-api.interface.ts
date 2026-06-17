@@ -1,5 +1,4 @@
-import { Conference, Division } from '../enums/index.enum'; 
-import { ApiProperty } from '@nestjs/swagger';
+import { Conference, Division } from '../enums/index.enum';
 
 export interface TeamModel {
   apiId: number;

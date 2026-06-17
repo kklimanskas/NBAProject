@@ -1,16 +1,7 @@
 import { Position, Conference, Division } from "../enums/index.enum";
+import type { Team } from "./nbaTeamTypes";
 
-export interface Team {
-  id: number;
-  conference: Conference;
-  division: Division;
-  city: string;
-  name: string;
-  fullName: string;
-  abbreviation: string;
-}
-
-export interface Player {
+interface Player {
   apiId: number;
   firstName: string;
   lastName: string;
@@ -26,7 +17,7 @@ export interface Player {
   team: Team;
 }
 
-export interface PlayersResponse {
+interface PlayersResponse {
   data: Player[];
   meta: {
     total_pages: number;
@@ -36,11 +27,11 @@ export interface PlayersResponse {
   };
 }
 
-export interface PlayerResponse {
+interface PlayerResponse {
   data: Player;
 }
 
-export interface UpdatePlayerPayload {
+interface UpdatePlayerPayload {
   firstName?: string;
   lastName?: string;
   college?: string;
@@ -54,3 +45,5 @@ export interface UpdatePlayerPayload {
   draftNumber?: number;
   team?: number;
 }
+
+export type { Player, PlayersResponse, PlayerResponse, UpdatePlayerPayload };

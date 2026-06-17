@@ -32,9 +32,11 @@ export class Team {
   division: string = '';
 
   @Prop({ default: false })
-  @ApiProperty({ description: 'Indicates whether the team is soft deleted', default: false })
+  @ApiProperty({
+    description: 'Indicates whether the team is soft deleted',
+    default: false,
+  })
   isDeleted: boolean = false;
-
 }
 
 export const TeamSchema = SchemaFactory.createForClass(Team);

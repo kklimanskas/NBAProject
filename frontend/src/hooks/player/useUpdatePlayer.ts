@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updatePlayer, deletePlayer } from '../api/playerApi';
-import type { Player, UpdatePlayerPayload } from '../types/nba';
+import { updatePlayer } from '../../api/playerApi';
+import type { UpdatePlayerPayload } from '../../types/nbaPlayerTypes';
 
 export const useUpdatePlayer = () => {
   const queryClient = useQueryClient();
@@ -17,21 +17,9 @@ export const useUpdatePlayer = () => {
     },
     retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['players'] });
-    },
-  });
-};
-
-export const useDeletePlayer = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (id: number) => deletePlayer(id),
-    retry: 2,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['players'] });
+      queryClient.invalidateQueries({ queryKey: ['player', variables.id] });
     },
   });
 };

@@ -14,7 +14,7 @@ import {
   FormControl,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material";
-import type { Player } from "../../types/nba";
+import type { Player } from "../../types/nbaPlayerTypes";
 import { Position } from "../../enums/index.enum";
 
 interface PlayerEditDialogProps {

@@ -4,7 +4,6 @@ import { Position } from 'src/enums/index.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PlayerDto {
-  
   @IsOptional()
   @IsNumber()
   @ApiProperty({ description: 'The API ID of the player' })

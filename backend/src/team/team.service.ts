@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,17 +18,22 @@ export class TeamService {
     @InjectModel(Team.name) private teamModel: Model<Team>,
   ) {}
 
-  async fetchTeams(query: PaginationDto): Promise<FetchTeamResponse<TeamModel>> {
+  async fetchTeams(
+    query: PaginationDto,
+  ): Promise<FetchTeamResponse<TeamModel>> {
     try {
       this.logger.log('Fetching teams');
       const response = await firstValueFrom(
-        this.httpService.get<FetchTeamResponse<TeamModel>>(`${this.baseUrl}/teams`, {
-          headers: { Authorization: this.apiKey },
-          params: {
-            page: query.page,
-            per_page: query.perPage,
+        this.httpService.get<FetchTeamResponse<TeamModel>>(
+          `${this.baseUrl}/teams`,
+          {
+            headers: { Authorization: this.apiKey },
+            params: {
+              page: query.page,
+              per_page: query.perPage,
+            },
           },
-        }),
+        ),
       );
       return response.data;
     } catch (error) {
@@ -37,7 +42,9 @@ export class TeamService {
     }
   }
 
-  async populateDatabaseWithTeams(query: PaginationDto): Promise<FetchTeamResponse<TeamModel>> {
+  async populateDatabaseWithTeams(
+    query: PaginationDto,
+  ): Promise<FetchTeamResponse<TeamModel>> {
     try {
       const response = await this.fetchTeams(query);
 
@@ -66,5 +73,4 @@ export class TeamService {
       throw error;
     }
   }
-
 }

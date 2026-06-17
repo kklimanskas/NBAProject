@@ -11,7 +11,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('NBA Project API')
-    .setDescription('NBA player and team management API. Part of a Full Stack application. Provides endpoints for managing players and teams, including fetching, updating, and soft deleting records. Also includes cron jobs for data synchronization with balldontlie API.')
+    .setDescription(
+      'NBA player and team management API. Part of a Full Stack application. Provides endpoints for managing players and teams, including fetching, updating, and soft deleting records. Also includes cron jobs for data synchronization with balldontlie API.',
+    )
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);

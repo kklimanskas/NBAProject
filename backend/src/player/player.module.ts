@@ -8,12 +8,11 @@ import { Team, TeamSchema } from '../schemas/team.schema';
 import { PlayerJob } from '../cronjobs/player.job';
 
 @Module({
-   imports: [
+  imports: [
     HttpModule,
     MongooseModule.forFeature([
       { name: Player.name, schema: PlayerSchema },
-      { name: Team.name, schema: TeamSchema }, 
-      
+      { name: Team.name, schema: TeamSchema },
     ]),
   ],
   controllers: [PlayerController],

@@ -9,7 +9,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import type { Player } from "../../types/nba"
+import type { Player } from "../../types/nbaPlayerTypes"
 import { Position } from "../../enums/index.enum";
 import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 

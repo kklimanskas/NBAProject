@@ -17,16 +17,13 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 import SchoolIcon from "@mui/icons-material/School";
 import PublicIcon from "@mui/icons-material/Public";
-import { fetchPlayer, updatePlayer } from "../../api/playerApi";
-import type { Player } from "../../types/nba";
+import type { Player } from "../../types/nbaPlayerTypes";
 import { Position } from "../../enums/index.enum";
 import { PlayerEditDialog, ConfirmDialog } from "./PlayerDialog";
-import type { UpdatePlayerPayload } from "../../types/nba";
-import { deletePlayer } from "../../api/playerApi";
-import {
-  useUpdatePlayer,
-  useDeletePlayer,
-} from "../../hooks/usePlayerMutations";
+import type { UpdatePlayerPayload } from "../../types/nbaPlayerTypes";
+import { useUpdatePlayer } from "../../hooks/player/useUpdatePlayer";
+import { useDeletePlayer } from "../../hooks/player/useDeletePlayer";
+import { usePlayer } from "../../hooks/player/useGetPlayer";
 
 const getPositionColor = (position: string) => {
   switch (position) {
@@ -61,9 +58,7 @@ const getPositionFullName = (position: string) => {
 const PlayerDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [player, setPlayer] = useState<Player | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const { data, isLoading, error } = usePlayer(Number(id));
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -72,27 +67,6 @@ const PlayerDetail: React.FC = () => {
 
   const { mutate: update, isPending: isUpdating } = useUpdatePlayer();
   const { mutate: remove, isPending: isDeleting } = useDeletePlayer();
-
-  useEffect(() => {
-    const loadPlayer = async () => {
-      if (!id) return;
-
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetchPlayer(Number(id));
-        setPlayer(response.data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to load player"),
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadPlayer();
-  }, [id]);
 
   const handleOpenEdit = () => {
     setIsEditOpen(true);
@@ -112,7 +86,7 @@ const PlayerDetail: React.FC = () => {
   };
 
   const handleSaveEdit = (updatedPlayer: Player) => {
-    if (!player) return;
+    if (!data?.data) return;
 
     const payload: UpdatePlayerPayload = {
       firstName: updatedPlayer.firstName,
@@ -130,10 +104,9 @@ const PlayerDetail: React.FC = () => {
     };
 
     update(
-      { id: player.apiId, payload: payload },
+      { id: data.data.apiId, payload: payload },
       {
         onSuccess: () => {
-          setPlayer(updatedPlayer);
           setIsEditOpen(false);
         },
         onError: () => {
@@ -144,8 +117,8 @@ const PlayerDetail: React.FC = () => {
   };
 
   const handleConfirmDelete = async () => {
-    if (!player) return;
-    remove(player.apiId, {
+    if (!data?.data) return;
+    remove(data.data.apiId, {
       onSuccess: (data) => {
         setDeleted(true);
         setDeleteMessage(data.message);
@@ -169,7 +142,7 @@ const PlayerDetail: React.FC = () => {
     );
   }
 
-  if (error || !player) {
+  if (error || !data?.data) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Button
@@ -217,7 +190,7 @@ const PlayerDetail: React.FC = () => {
         {/* Header */}
         <Box
           sx={{
-            background: `linear-gradient(135deg, ${getPositionColor(player.position)}33 0%, ${getPositionColor(player.position)}66 100%)`,
+            background: `linear-gradient(135deg, ${getPositionColor(data.data.position)}33 0%, ${getPositionColor(data.data.position)}66 100%)`,
             p: 4,
           }}
         >
@@ -243,7 +216,7 @@ const PlayerDetail: React.FC = () => {
                     color: "primary",
                   }}
                 >
-                  #{player.jerseyNumber}
+                  #{data.data.jerseyNumber}
                 </Typography>
               </Box>
             </Grid>
@@ -258,7 +231,7 @@ const PlayerDetail: React.FC = () => {
                 }}
                 gutterBottom
               >
-                {player.firstName} {player.lastName}
+                {data.data.firstName} {data.data.lastName}
               </Typography>
               <Stack
                 sx={{
@@ -271,9 +244,9 @@ const PlayerDetail: React.FC = () => {
               >
                 <Chip
                   icon={<SportsBasketballIcon />}
-                  label={getPositionFullName(player.position)}
+                  label={getPositionFullName(data.data.position)}
                   sx={{
-                    backgroundColor: getPositionColor(player.position),
+                    backgroundColor: getPositionColor(data.data.position),
                     color: "white",
                     fontWeight: "bold",
                     fontSize: "1rem",
@@ -282,7 +255,7 @@ const PlayerDetail: React.FC = () => {
                   }}
                 />
                 <Chip
-                  label={player.team.abbreviation}
+                  label={data.data.team.abbreviation}
                   variant="outlined"
                   sx={{ fontWeight: "bold", fontSize: "1rem", py: 2 }}
                 />
@@ -303,19 +276,19 @@ const PlayerDetail: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   Team
                 </Typography>
-                <Typography variant="h6">{player.team.fullName}</Typography>
+                <Typography variant="h6">{data.data.team.fullName}</Typography>
               </Grid>
               <Grid size={{ xs: 6, sm: 3 }}>
                 <Typography variant="body2" color="text.secondary">
                   Conference
                 </Typography>
-                <Typography variant="h6">{player.team.conference}</Typography>
+                <Typography variant="h6">{data.data.team.conference}</Typography>
               </Grid>
               <Grid size={{ xs: 6, sm: 3 }}>
                 <Typography variant="body2" color="text.secondary">
                   Division
                 </Typography>
-                <Typography variant="h6">{player.team.division}</Typography>
+                <Typography variant="h6">{data.data.team.division}</Typography>
               </Grid>
             </Grid>
           </Paper>
@@ -333,7 +306,7 @@ const PlayerDetail: React.FC = () => {
                   Height
                 </Typography>
                 <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
-                  {player.height}
+                  {data.data.height}
                 </Typography>
               </Paper>
             </Grid>
@@ -343,7 +316,7 @@ const PlayerDetail: React.FC = () => {
                   Weight
                 </Typography>
                 <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
-                  {player.weight} lbs
+                  {data.data.weight} lbs
                 </Typography>
               </Paper>
             </Grid>
@@ -353,7 +326,7 @@ const PlayerDetail: React.FC = () => {
                   Position
                 </Typography>
                 <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
-                  {player.position}
+                  {data.data.position}
                 </Typography>
               </Paper>
             </Grid>
@@ -363,7 +336,7 @@ const PlayerDetail: React.FC = () => {
                   Jersey
                 </Typography>
                 <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
-                  #{player.jerseyNumber}
+                  #{data.data.jerseyNumber}
                 </Typography>
               </Paper>
             </Grid>
@@ -386,7 +359,7 @@ const PlayerDetail: React.FC = () => {
                     College
                   </Typography>
                   <Typography variant="body1">
-                    {player.college || "N/A"}
+                    {data.data.college || "N/A"}
                   </Typography>
                 </Box>
               </Stack>
@@ -400,7 +373,7 @@ const PlayerDetail: React.FC = () => {
                   <Typography variant="body2" color="text.secondary">
                     Country
                   </Typography>
-                  <Typography variant="body1">{player.country}</Typography>
+                  <Typography variant="body1">{data.data.country}</Typography>
                 </Box>
               </Stack>
             </Grid>
@@ -426,7 +399,7 @@ const PlayerDetail: React.FC = () => {
                   Year
                 </Typography>
                 <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
-                  {player.draftYear || "Undrafted"}
+                  {data.data.draftYear || "Undrafted"}
                 </Typography>
               </Paper>
             </Grid>
@@ -443,7 +416,7 @@ const PlayerDetail: React.FC = () => {
                   Round
                 </Typography>
                 <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
-                  {player.draftRound || "Undrafted"}
+                  {data.data.draftRound || "Undrafted"}
                 </Typography>
               </Paper>
             </Grid>
@@ -460,7 +433,7 @@ const PlayerDetail: React.FC = () => {
                   Pick
                 </Typography>
                 <Typography sx={{ variant: "h5", fontWeight: "bold" }}>
-                  {player.draftNumber || "Undrafted"}
+                  {data.data.draftNumber || "Undrafted"}
                 </Typography>
               </Paper>
             </Grid>
@@ -470,7 +443,7 @@ const PlayerDetail: React.FC = () => {
 
       <PlayerEditDialog
         open={isEditOpen}
-        player={player}
+        player={data.data}
         onClose={handleCloseEdit}
         onSave={handleSaveEdit}
       />
