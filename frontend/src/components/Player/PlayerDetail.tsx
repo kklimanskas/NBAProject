@@ -17,12 +17,10 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 import SchoolIcon from "@mui/icons-material/School";
 import PublicIcon from "@mui/icons-material/Public";
-import { fetchPlayer, updatePlayer } from "../../api/playerApi";
 import type { Player } from "../../types/nbaPlayerTypes";
 import { Position } from "../../enums/index.enum";
 import { PlayerEditDialog, ConfirmDialog } from "./PlayerDialog";
 import type { UpdatePlayerPayload } from "../../types/nbaPlayerTypes";
-import { deletePlayer } from "../../api/playerApi";
 import { useUpdatePlayer } from "../../hooks/player/useUpdatePlayer";
 import { useDeletePlayer } from "../../hooks/player/useDeletePlayer";
 import { usePlayer } from "../../hooks/player/useGetPlayer";
@@ -60,7 +58,6 @@ const getPositionFullName = (position: string) => {
 const PlayerDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  //const [player, setPlayer] = useState<Player | null>(null);
   const { data, isLoading, error } = usePlayer(Number(id));
 
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -70,33 +67,6 @@ const PlayerDetail: React.FC = () => {
 
   const { mutate: update, isPending: isUpdating } = useUpdatePlayer();
   const { mutate: remove, isPending: isDeleting } = useDeletePlayer();
-
-  // useEffect(() => {
-  //   if (data?.data) {
-  //     setPlayer(data.data);
-  //   }
-  // }, [data]);
-
-  // useEffect(() => {
-  //   const loadPlayer = async () => {
-  //     if (!id) return;
-
-  //     setIsLoading(true);
-  //     setError(null);
-  //     try {
-  //       const response = await fetchPlayer(Number(id));
-  //       setPlayer(response.data);
-  //     } catch (err) {
-  //       setError(
-  //         err instanceof Error ? err : new Error("Failed to load player"),
-  //       );
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   loadPlayer();
-  // }, [id]);
 
   const handleOpenEdit = () => {
     setIsEditOpen(true);

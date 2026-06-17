@@ -11,8 +11,6 @@ import {
 } from "@mui/material";
 import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 import PlayerCard from "../components/Player/PlayerCard";
-import { fetchPlayers } from "../api/playerApi";
-import type { PlayersResponse } from "../types/nbaPlayerTypes";
 import { usePlayers } from "../hooks/player/useGetPlayer";
 
 const PLAYERS_PER_PAGE = 6;
@@ -23,25 +21,6 @@ const Home: React.FC = () => {
     page,
     perPage: PLAYERS_PER_PAGE,
   });
-
-  // useEffect(() => {
-  //   const loadPlayers = async () => {
-  //     setIsLoading(true);
-  //     setError(null);
-  //     try {
-  //       const response = await fetchPlayers(page, PLAYERS_PER_PAGE);
-  //       setData(response);
-  //     } catch (err) {
-  //       setError(
-  //         err instanceof Error ? err : new Error("Failed to load players"),
-  //       );
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-
-  //   loadPlayers();
-  // }, [page]);
 
   const handlePageChange = (
     _event: React.ChangeEvent<unknown>,
