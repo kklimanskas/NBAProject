@@ -55,11 +55,17 @@ export class Player {
   team: number = 0;
 
   @Prop({ default: false })
-  @ApiProperty({ description: 'Indicates whether the player is soft deleted', default: false })
+  @ApiProperty({
+    description: 'Indicates whether the player is soft deleted',
+    default: false,
+  })
   isDeleted: boolean = false;
 
   @Prop({ type: Date, default: null })
-  @ApiProperty({ description: 'The date when the player was last updated', default: null })
+  @ApiProperty({
+    description: 'The date when the player was last updated',
+    default: null,
+  })
   updatedAtDate: Date | null = null;
 }
 

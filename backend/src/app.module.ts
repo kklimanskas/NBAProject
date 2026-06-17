@@ -18,7 +18,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       }),
     }),
     PlayerModule,
-    TeamModule
+    TeamModule,
   ],
   controllers: [AppController],
   providers: [AppService],

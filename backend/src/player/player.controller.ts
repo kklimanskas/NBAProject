@@ -10,7 +10,12 @@ import {
 import { PlayerService } from './player.service';
 import { PaginationDto } from 'src/dto/pagination.dto';
 import { PlayerDto } from 'src/dto/player.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiExtraModels } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiExtraModels,
+} from '@nestjs/swagger';
 import { Player } from 'src/schemas/player.schema';
 
 //import { PlayerJob } from '../cronjobs/player.job';

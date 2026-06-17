@@ -1,5 +1,4 @@
-import { TeamModel } from "./team-api.interface";
-import { Position } from "src/enums/index.enum";
+import { Position } from 'src/enums/index.enum';
 
 export interface PlayerModel {
   id: number;
@@ -17,6 +16,6 @@ export interface PlayerModel {
   team?: { id: number };
 }
 
-export interface FetchPlayerResponse<T>{
-  data:T[];
+export interface FetchPlayerResponse<T> {
+  data: T[];
 }
