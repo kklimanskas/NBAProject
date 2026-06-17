@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Patch,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Patch, Query } from '@nestjs/common';
 import { TeamService } from './team.service';
 import { PaginationDto } from 'src/dto/pagination.dto';
 import { Team } from '../schemas/team.schema';

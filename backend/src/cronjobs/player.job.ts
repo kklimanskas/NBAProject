@@ -12,10 +12,12 @@ export class PlayerJob {
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async syncPlayers() {
     try {
-      this.logger.log('Starting player sync');
-      const query: PaginationDto = { page: 1, perPage: 25 };
-      await this.playerService.populateDatabaseWithPlayers(query);
-      this.logger.log('Player sync complete');
+      const query: PaginationDto = { page: 1, perPage: 100 };
+      const response =
+        await this.playerService.populateDatabaseWithPlayers(query);
+      this.logger.log(
+        `Player sync completed: ${response.data.length} players updated/added.`,
+      );
     } catch (error) {
       this.logger.error('Player sync failed', (error as Error).stack);
     }
