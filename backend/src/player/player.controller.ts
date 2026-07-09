@@ -17,8 +17,8 @@ import {
   ApiExtraModels,
 } from '@nestjs/swagger';
 import { Player } from 'src/schemas/player.schema';
+//import { PlayerJob } from '../cronjobs/player.job';
 
-import { PlayerJob } from '../cronjobs/player.job';
 @ApiTags('Player')
 @ApiExtraModels(Player)
 @Controller('player')
